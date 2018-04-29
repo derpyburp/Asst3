@@ -4,7 +4,7 @@ static const int portNum = 11111;
 const struct hostent *sIP_addr;
 struct sockaddr_in sAddr_Info;
 
-int networkserverinit(char * hostname){
+int netserverinit(char * hostname){
 	//Setting up the connection
 	sIP_addr = gethostbyname(hostname);
 	

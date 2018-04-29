@@ -27,7 +27,7 @@ link * create(char * arg);
 link * add(link * head, link * new);
 void freeList(link * head);
 link argPull(char * buffer, link * head);
-int networkserverinit(char * hostname);
+int netserverinit(char * hostname);
 int openbytes(link *head, int fd);
 int closebytes(link *head, int fd);
 int readbytes(link *head, int fd);
