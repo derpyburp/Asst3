@@ -1,5 +1,5 @@
 #include "libnetfiles.h"
-
+//HAVE TO UPDATE PORT NUMBER
 static const int portNum = 11111;
 const struct hostent *sIP_addr;
 struct sockaddr_in sAddr_Info;

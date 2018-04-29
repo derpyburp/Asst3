@@ -1,6 +1,11 @@
 #include "libnetfiles.h"
 
+//Have to update port number
+
 pthread_mutex_t mutex;
+
+
+
 
 //Function that opens a file and sends FD to client 
 int nopen(link * head, int socketFD){
@@ -190,5 +195,48 @@ void * threadRunner(int * args){
 		pthread_exit(NULL);
 	}
 	pthread_exit(NULL);
+
+}
+
+int main(){
+	//Setup
+	socklen_t client;
+	int socketFD, nFD=malloc(sizeof(int)),portnum=42942;
+	pthread_t net_thread;
+	
+	struct sockaddr_in sAddrInfo, cAddrInfo;
+	socketFD=socket(AF_INET,SOCK_STREAM,0);
+	
+	//Do error checking 
+	if(setsockopt(socketFD,SOL_SOCKET,SO_REUSEADDR,&(int){1},sizeof(int))<0){
+		fprintf(stderr,"setsockopt failed");
+	}
+	if(socketFD<0){
+		fprintf(stderr,"Can't open file\n");
+		return -1;
+	}
+	
+	bzero((char*)&sAddrInfo,sizeof(sAddrInfo));
+	sAddrInfo.sin_port=htons(portnum);
+	sAddrInfo.sin_family=AF_INET;
+	sAddrInfo.sin_addr.s_addr=INADDR_ANY;
+
+	if(bind(socketFD,(struct sockaddr *)&sAddrInfo,sizeof(sAddrInfo))<0){
+		fprintf(stderr,"Bind failed\n");
+		return -1;
+	}
+
+	//The real code begins 
+	while(1){
+		listen(socketFD,5);
+		client=sizeof(cAddrInfo);
+		*nFD=accept(socketFD,(struct sockaddr *)&cAddrInfo,&client);
+		if(*nFD<0) fprintf(stderr,"Connection couldn't be accepted\n");	
+		pthread_create(&net_thread,NULL,(void*)threadRunner,nFD);
+		pthread_detach(net_thread);
+	
+	}	
+	
+	return 0;
 
 }
