@@ -29,7 +29,7 @@ int netopen(char * path, int mode){
 	int socketFD = getSocketFD();
 	int bytes;
 	node * head=NULL;
-	int error, fd;
+	int err, fd;
 		
 
 	//Error check for modes lel
@@ -87,7 +87,7 @@ int netclose(int fd){
 	errno=0;
 	
 	//Construct the message 
-	bzero(buffer[256]);
+	bzero(buffer,256);
 	sprintf(buffer,"close,%d,",fd);
 	
 	//Send message
@@ -117,7 +117,7 @@ int netclose(int fd){
 	return result;	
 }
 
-ssize_t netread(int fd, void * buffer, size_t bytes){
+ssize_t netread(int fd, const void * buffer, size_t bytes){
 	int nbytes;
 	int socketFD = getSocketFD();
 	if(fd==-1){
@@ -133,7 +133,7 @@ ssize_t netread(int fd, void * buffer, size_t bytes){
 	node * head = NULL;
 	size_t readbytes;
 	
-	sprintf(buf,"read.%d.%d.",fd,bytes);
+	sprintf(buf,"read.%d.%zu.",fd,bytes);
 	nbytes=write(socketFD,buf,strlen(buf));
 	if(nbytes<0){
 		fprintf(stderr,"Couldn't write to socket,\n");
@@ -156,7 +156,7 @@ ssize_t netread(int fd, void * buffer, size_t bytes){
 	bzero(read_buff,x);
 	sprintf(read_buff,"%s",head->next->next->arg);
 	while(1){
-		if(stlen(read_buff)<readbytes){
+		if(strlen(read_buff)<readbytes){
 			bzero(buf,1000);
 			nbytes=read(socketFD,buf,1000);
 			sprintf(read_buff,"%s%s",read_buff,buf);
@@ -187,11 +187,10 @@ ssize_t netwrite(int fd, const void *buffer, size_t bytes){
 	int x,err;
 	errno=0;
 	size_t writtenbytes;
-	char * readBuffer;
 	node * head = NULL;
 	
 	//Send a message and check teh errors for the send 
-	sprintf(sBuff,"write,%d,%d,%s",fd,bytes,(char*)buffer);
+	sprintf(sBuff,"write,%d,%zu,%s",fd,bytes,(char*)buffer);
 	x=write(socketFD,sBuff,strlen(sBuff));
 	if(x<0){
 		fprintf(stderr,"Couldn't write to socket\n");
@@ -243,11 +242,13 @@ char * pullString(int start, int end, int size, char * og){
 //More helper method
 int intLen(int x){
 	int r=0;
-	wihle(x>0){
+	int rInt;
+	while(x>0){
 		r++;
 		x/=10;
 	}
-	return r;
+	rInt = r;
+	return rInt;
 }
 
 //Creates a linklist 
@@ -313,7 +314,7 @@ node * argPull(char * buffer, node * head){
 
 }
 //Pulling data in the same way as readPull 
-link * readPull(char * buffer, node * head){
+node * readPull(char * buffer, node * head){
 	//Modified argPull, it's for specific data 
 	char * tString; 
 	node * tLink;
@@ -336,7 +337,7 @@ link * readPull(char * buffer, node * head){
 	}
 
 	//Getting the File Descriptor 
-	for(i;i<strlen(buffer);i++){
+	for(;i<strlen(buffer);i++){
 		if(buffer[i]==','){
 			if(size==0){
 				continue;
@@ -396,7 +397,7 @@ node * writePull(char * buffer, node * head){
 	}
 
 	//Getting number of bytes to read out 
-	for(i;i<strlen(buffer);i++){
+	for(;i<strlen(buffer);i++){
 		if(buffer[i]==','){
 			if(size==0){
 				continue;
@@ -468,40 +469,3 @@ int errorCheck(int err){
 	return x;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
