@@ -28,7 +28,7 @@ int netopen(char * path, int mode){
 	char buffer[256];
 	int socketFD = getSocketFD();
 	int bytes;
-	link * head=NULL;
+	node * head=NULL;
 	int error, fd;
 		
 
@@ -81,7 +81,7 @@ int netclose(int fd){
 	char buffer[256];
 	int socketFD = getSocketFD();
 	int bytes;
-	link * head = NULL;
+	node * head = NULL;
 	int result;
 	int err;	
 	errno=0;
@@ -130,7 +130,7 @@ ssize_t netread(int fd, void * buffer, size_t bytes){
 	char buf[1024];
 	int err;
 	char * read_buff;
-	link * head = NULL;
+	node * head = NULL;
 	size_t readbytes;
 	
 	sprintf(buf,"read.%d.%d.",fd,bytes);
@@ -188,7 +188,7 @@ ssize_t netwrite(int fd, const void *buffer, size_t bytes){
 	errno=0;
 	size_t writtenbytes;
 	char * readBuffer;
-	link * head = NULL;
+	node * head = NULL;
 	
 	//Send a message and check teh errors for the send 
 	sprintf(sBuff,"write,%d,%d,%s",fd,bytes,(char*)buffer);
@@ -251,15 +251,15 @@ int intLen(int x){
 }
 
 //Creates a linklist 
-link * create(char * arg){
-	link * tmp=(link*)malloc(sizeof(link));
+node * create(char * arg){
+	node * tmp=(node*)malloc(sizeof(node));
 	tmp->arg=strdup(arg);
 	tmp->next=NULL;
 	return tmp;	
 }
 
 //Recursively adds new node to end of list 
-link * add(link * head, link * new){
+node * add(node * head, node * new){
 	if(head==NULL){
 		head=new;
 		return head;
@@ -270,7 +270,7 @@ link * add(link * head, link * new){
 }
 
 //Free data from the list 
-void freeList(link * head){
+void freeList(node * head){
 	if(head==NULL) return;
 	else{
 		freeList(head->next);
@@ -279,10 +279,10 @@ void freeList(link * head){
 	}
 }
 
-link * argPull(char * buffer, link * head){
+node * argPull(char * buffer, node * head){
 	//Setup
 	char * tString;
-	link * tLink;
+	node * tLink;
 	size_t startPos=-1, endPos=0,size=0,len=0,i=0;
 	len=strlen(buffer);
 	for(i=0;i<=len;i++){
@@ -313,10 +313,10 @@ link * argPull(char * buffer, link * head){
 
 }
 //Pulling data in the same way as readPull 
-link * readPull(char * buffer, link * head){
+link * readPull(char * buffer, node * head){
 	//Modified argPull, it's for specific data 
 	char * tString; 
-	link * tLink;
+	node * tLink;
 	size_t startPos=0,endPos=0,size=0,len=0,i=0;
 	len=strlen(buffer);
 	
@@ -369,10 +369,10 @@ link * readPull(char * buffer, link * head){
 
 }
 
-link * writePull(char * buffer, link * head){
+node * writePull(char * buffer, node * head){
 	//More bad functions 
 	char * tString;
-	link * tLink;
+	node * tLink;
 	size_t startPos=0,endPos=0,size=0,i=0;
 	
 	//Getting command out 
